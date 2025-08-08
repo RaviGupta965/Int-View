@@ -1,14 +1,20 @@
 import React, { useRef, useState } from "react";
 import {useForm} from "react-hook-form";
+import {Navigate} from "react-router-dom"
+import "../CSS/Login.css"
 
-function Login(props){
+function Login(){
     //props setCrededntials
 
-    const [login, getValues] = useForm();
+    // login Credentials, loading State, error state
+    const {register, handleSubmit} = useForm();
     const [loading, setLoading] = useState(false);
     const [err, setError] = useState(false);
-    // async function handleSubmit(e){
-    //     e.preventDefault();
+
+    // FETCH API FOR FORM SUBMISSION AND GOOGLE LOGIN
+
+    function onSubmit(data){
+        console.log(data);
     //     setLoading(true);
     //     const [email,password] = getValues();
     //     fetch("http://localhost:3000/api/login", {
@@ -28,11 +34,7 @@ function Login(props){
     //         props.setCredentials(null);
     //         setError(err);
     //     }).finally(()=>setLoading(false));
-
-        
-    //     console.log("Email: " + email + ", Password: " + password);
-        
-    // }
+    }
 
     // async function handleGoogleSubmit(e){
     //     e.preventDefault();
@@ -50,21 +52,33 @@ function Login(props){
     // }
 
     return <section className="login-section">
+
         <div className="login-div">
             <h2>Welcome back</h2>
+            
+            {/* if err then show the message */}
+
             {err && <p>Email and Password didn't matched! Please Try Again!</p>}
-            <form>
-                <input type="text" {...login("email")}/>
-                <input type="password" {...login("password")}/>
-                <button onClick={handleSubmit} >
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <input type="text" {...register("email")} placeholder="Email"/>
+                <input type="password" {...register("password")} placeholder="Password"/>
+                <button 
+                // onClick={handleSubmit} 
+                className="login-button"
+                type="submit">
+                    {/* spinner starts on click */}
                     {loading && <span>
                         <div className="spinner"></div>
                     </span>}
                 Login</button>
-                <div>OR</div>
-                <button onClick={handleGoogleSubmit}>Google</button>
+                <div className="or-div"><p>or</p></div>
+                <button className="google-button"
+                // onClick={handleGoogleSubmit}
+                
+                > <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/250px-Google_Favicon_2025.svg.png" alt="google login" /></span> Google</button>
             </form>
-            
+            <p className="redirect">Do not have an account? <span><a href="/register">Register</a></span></p>
         </div>
     </section>
 }
+export default Login;
