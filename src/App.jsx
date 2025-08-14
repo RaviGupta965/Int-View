@@ -4,13 +4,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './LandingPage'
 import Register from './Auth/Register'
 import Login from './Auth/Login'
-
+import Room from './RoomComponents/Room'
+import Meet from './Video/Meet'
 function App() {
   return (<BrowserRouter>
     <Routes>
         <Route path="/" element={<LandingPage/>} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/room" element={<Room />} />
+        <Route path="/meet/:id" element={<Meet />} />
       </Routes>
   </BrowserRouter>);
 }
