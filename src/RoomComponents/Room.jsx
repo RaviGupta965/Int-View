@@ -6,14 +6,14 @@ let socket;
 
 export default function RoomUI() {
   if (!socket) {
-    socket = io("http://localhost:5000", { autoConnect: true });
+    socket = io("https://int-view-backend.onrender.com", { autoConnect: true });
   }
   const [roomName, setRoomName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
   // Creating Room Hnadler
   const onCreate = async (Roomname) => {
-    const res = await axios.get("http://localhost:5000/create-room");
+    const res = await axios.get("https://int-view-backend.onrender.com/create-room");
     setRoomCode(res.data.roomCode);
     console.log(`Creating Room : ${Roomname}`);
     alert(`Room created! Share this code: ${res.data.roomCode}`);

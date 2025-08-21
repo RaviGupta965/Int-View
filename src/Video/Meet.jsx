@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000", { autoConnect: true });
+const socket = io("https://int-view-backend.onrender.com", { autoConnect: true });
 
 function Meet() {
   const { roomId } = useParams(); // get roomId from URL
