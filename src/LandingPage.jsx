@@ -6,6 +6,7 @@ function LandingPage(){
         <h1>Landing Page</h1>
         <button onClick={()=>navigate('/login')}><button>Login</button></button>
         <button onClick={()=>navigate('/register')}><button>Register</button></button>
+        <button onClick={()=>navigate('/room')}><button>Room</button></button>
     </section>
 }
 export default LandingPage;
