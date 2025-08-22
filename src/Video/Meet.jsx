@@ -4,7 +4,8 @@ import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Ca
 import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 function Meet() {
-   const navigate = useNavigate();
+  const editorRef = useRef(null);
+  const navigate = useNavigate();
   const {isSignedIn} = useAuth();
       if(!isSignedIn){
           return <div className="w-[100%] h-[100vh] flex justify-center items-center">
@@ -26,7 +27,6 @@ function Meet() {
       }
 
 
-  const editorRef = useRef(null);
 
   function handleOnMount(editor) {
     console.log(editor);
