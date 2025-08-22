@@ -14,7 +14,7 @@ function Meet() {
                     <CardDescription>Please Sign-In to continue</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
-                    <SignInButton fallbackRedirectUrl={navigate("/room")}>
+                    <SignInButton fallbackRedirectUrl={navigate("/meet/:id")}>
                     <button 
                       className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
                       Sign-In
