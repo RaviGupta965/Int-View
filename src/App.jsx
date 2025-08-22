@@ -12,9 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/room" element={<Room />} />
+          <Route path="/room" element={<RoomUI />} />
           <Route path="/meet/:id" element={<Meet />} />
         </Routes>
       </BrowserRouter>
