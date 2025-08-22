@@ -20,5 +20,5 @@ function App() {
       </BrowserRouter>
     </SocketProvider>
   );
-
+}
 export default App;
