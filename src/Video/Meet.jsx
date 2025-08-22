@@ -23,6 +23,7 @@ function Meet() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
+
   const pendingCandidates = useRef([]);
   const { isSignedIn } = useAuth();
   if (!isSignedIn) {
@@ -44,6 +45,7 @@ function Meet() {
       </div>
     );
   }
+
 
   function handleOnMount(editor) {
     console.log(editor);
