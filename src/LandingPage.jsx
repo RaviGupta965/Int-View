@@ -1,12 +1,14 @@
+import { SignedIn, SignedOut, SignInButton, useAuth, UserButton, UserProfile } from "@clerk/clerk-react";
 import React from "react";
-import { useNavigate} from "react-router-dom";
 function LandingPage(){
-    const navigate= useNavigate();
     return <section>
         <h1>Landing Page</h1>
-        <button onClick={()=>navigate('/login')}><button>Login</button></button>
-        <button onClick={()=>navigate('/register')}><button>Register</button></button>
-        <button onClick={()=>navigate('/room')}><button>Room</button></button>
+        <SignedOut>
+            <SignInButton/>
+        </SignedOut>
+        <SignedIn>
+            <UserButton/>
+        </SignedIn>
     </section>
 }
 export default LandingPage;

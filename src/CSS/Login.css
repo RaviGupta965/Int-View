@@ -24,6 +24,7 @@
     justify-content: space-evenly;
     /* border: 1px solid wheat; */
     width: 40%;
+    min-width: 300px;
     background-color: #ffffff2d;
     border-radius: 10px;
     box-shadow: 100px 100px 100px rgb(255,255,255,0.1);

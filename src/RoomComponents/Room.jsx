@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
+import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
 let socket;
-
 export default function RoomUI() {
   if (!socket) {
     socket = io("https://int-view-backend.onrender.com", { autoConnect: true });
@@ -11,6 +12,27 @@ export default function RoomUI() {
   const [roomName, setRoomName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
+  const {isSignedIn} = useAuth();
+      if(!isSignedIn){
+          return <div className="w-[100%] h-[100vh] flex justify-center items-center">
+            <Card className="w-[50%]">
+                <CardHeader>
+                    <CardTitle>Oops! It seems you are not signed-in</CardTitle>
+                    <CardDescription>Please Sign-In to continue</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
+                    <SignInButton fallbackRedirectUrl={"/room"}>
+                    <button 
+                      className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
+                      Sign-In
+                    </button>
+                    </SignInButton>
+                </CardFooter>
+            </Card>
+          </div>
+      }
+
+
   // Creating Room Hnadler
   const onCreate = async (Roomname) => {
     const res = await axios.get("https://int-view-backend.onrender.com/create-room");

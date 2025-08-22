@@ -2,11 +2,10 @@ import React from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./LandingPage";
-import Register from "./Auth/Register";
-import Login from "./Auth/Login";
-import Room from "./RoomComponents/Room";
+import RoomUI from './RoomComponents/Room'
 import Meet from "./Video/Meet";
 import { SocketProvider } from "./Context/socketContext";
+import './index.css'
 function App() {
   return (
     <SocketProvider>
@@ -21,6 +20,5 @@ function App() {
       </BrowserRouter>
     </SocketProvider>
   );
-}
 
 export default App;
