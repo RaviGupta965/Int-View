@@ -1,6 +1,44 @@
-import React from "react";
-
+import React, {useRef} from "react";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
+import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
+import { useNavigate } from "react-router-dom";
+import Editor from "@monaco-editor/react";
 function Meet() {
+   const navigate = useNavigate();
+  const {isSignedIn} = useAuth();
+      if(!isSignedIn){
+          return <div className="w-[100%] h-[100vh] flex justify-center items-center">
+            <Card className="w-[50%]">
+                <CardHeader>
+                    <CardTitle>Oops! It seems you are not signed-in</CardTitle>
+                    <CardDescription>Please Sign-In to continue</CardDescription>
+                </CardHeader>
+                <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
+                    <SignInButton fallbackRedirectUrl={navigate("/room")}>
+                    <button 
+                      className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
+                      Sign-In
+                    </button>
+                    </SignInButton>
+                </CardFooter>
+            </Card>
+          </div>
+      }
+
+
+  const editorRef = useRef(null);
+
+  function handleOnMount(editor) {
+    console.log(editor);
+    editorRef.current = editor;
+    editor.focus();
+    return;
+  }
+
+  function handleChange(){
+    
+  }
+
   return (
     <div className="h-screen w-screen flex bg-gray-900 text-white">
       {/* Left Sidebar - Video Feeds */}
@@ -56,8 +94,16 @@ function Meet() {
 
         {/* Code Editor Area */}
         <div className="flex-1 bg-gray-900 p-4">
-          <div className="h-[75%] w-full bg-black/30 border border-gray-700 rounded-lg p-3">
+          <div className="h-[75%] w-full bg-black/30 rounded-lg">
             {/* Monaco/CodeMirror Editor goes here */}
+            <Editor
+              height="100%"
+              defaultLanguage="cpp"
+              defaultValue="// Write your code here..."
+              theme="vs-dark" 
+              onMount={handleOnMount}
+              onChange={handleChange}
+            />
           </div>
           <div className="p-3 w-full ">
             <label htmlFor="">Output</label>
