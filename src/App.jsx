@@ -1,22 +1,24 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import LandingPage from './LandingPage'
-// import Room from './RoomComponents/Room'
-import Meet from './Video/Meet'
-import './index.css'
+import React from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingPage from "./LandingPage";
 import RoomUI from './RoomComponents/Room'
-
-
+import Meet from "./Video/Meet";
+import { SocketProvider } from "./Context/socketContext";
+import './index.css'
 function App() {
-  return <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage/>} />
-        <Route path='/room' element={<RoomUI/>}/>
-        <Route path='/meet/:id' element={<Meet/>}/>
-      </Routes>
-    </BrowserRouter>
+  return (
+    <SocketProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/room" element={<Room />} />
+          <Route path="/meet/:id" element={<Meet />} />
+        </Routes>
+      </BrowserRouter>
+    </SocketProvider>
+  );
 }
-
 export default App;

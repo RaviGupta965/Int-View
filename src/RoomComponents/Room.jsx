@@ -1,8 +1,14 @@
-import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { useState } from "react";
-import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
+import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
+let socket;
 export default function RoomUI() {
+  if (!socket) {
+    socket = io("https://int-view-backend.onrender.com", { autoConnect: true });
+  }
   const [roomName, setRoomName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
@@ -26,16 +32,32 @@ export default function RoomUI() {
           </div>
       }
 
-  // Creating Room Hnadler
-  const onCreate= async (Roomname)=>{
-    console.log(`Creating Room : ${Roomname}`);
-  }
 
+  // Creating Room Hnadler
+  const onCreate = async (Roomname) => {
+    const res = await axios.get("https://int-view-backend.onrender.com/create-room");
+    setRoomCode(res.data.roomCode);
+    console.log(`Creating Room : ${Roomname}`);
+    alert(`Room created! Share this code: ${res.data.roomCode}`);
+    navigate(`/meet/${res.data.roomCode}`);
+  };
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected:", socket.id);
+    });
+
+    socket.on("user-joined", ({ userName }) => {
+      console.log(`${userName} joined the room.`);
+    });
+  }, []);
 
   // Join Room Handler
-  const onJoin = async (roomcode)=>{
-    console.log(`Joining Room : ${roomcode}`);
-  }
+  const onJoin = async (roomcode) => {
+    socket.emit("join-room", { roomCode: roomcode });
+    navigate(`/meet/${roomCode}`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tl from-[#090040] via-purple-600 to-[#471396] flex items-center justify-center p-4">
       <div className="text-white text-xl font-bold m-5">
@@ -45,7 +67,9 @@ export default function RoomUI() {
         {/* Create Room */}
         <div className="rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl ring-1 ring-white/10 p-6">
           <h2 className="text-white text-2xl font-bold">Create a Room</h2>
-          <p className="text-white/80 text-sm mt-1">Enter a name for your room</p>
+          <p className="text-white/80 text-sm mt-1">
+            Enter a name for your room
+          </p>
           <input
             type="text"
             value={roomName}
