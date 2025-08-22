@@ -3,7 +3,13 @@ import axios from "axios";
 import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
+import {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from "../ui/Card";
 let socket;
 export default function RoomUI() {
   if (!socket) {
@@ -12,52 +18,56 @@ export default function RoomUI() {
   const [roomName, setRoomName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
-  const {isSignedIn} = useAuth();
-      if(!isSignedIn){
-          return <div className="w-[100%] h-[100vh] flex justify-center items-center">
-            <Card className="w-[50%]">
-                <CardHeader>
-                    <CardTitle>Oops! It seems you are not signed-in</CardTitle>
-                    <CardDescription>Please Sign-In to continue</CardDescription>
-                </CardHeader>
-                <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
-                    <SignInButton fallbackRedirectUrl={"/room"}>
-                    <button 
-                      className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
-                      Sign-In
-                    </button>
-                    </SignInButton>
-                </CardFooter>
-            </Card>
-          </div>
-      }
-
-
+  const { isSignedIn } = useAuth();
+  
   // Creating Room Hnadler
   const onCreate = async (Roomname) => {
-    const res = await axios.get("https://int-view-backend.onrender.com/create-room");
+    const res = await axios.get(
+      "https://int-view-backend.onrender.com/create-room"
+    );
     setRoomCode(res.data.roomCode);
     console.log(`Creating Room : ${Roomname}`);
     alert(`Room created! Share this code: ${res.data.roomCode}`);
     navigate(`/meet/${res.data.roomCode}`);
   };
-
+  
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected:", socket.id);
     });
-
+    
     socket.on("user-joined", ({ userName }) => {
       console.log(`${userName} joined the room.`);
     });
   }, []);
+  
+  if (!isSignedIn) {
+    return (
+      <div className="w-[100%] h-[100vh] flex justify-center items-center">
+        <Card className="w-[50%]">
+          <CardHeader>
+            <CardTitle>Oops! It seems you are not signed-in</CardTitle>
+            <CardDescription>Please Sign-In to continue</CardDescription>
+          </CardHeader>
+          <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
+            <SignInButton fallbackRedirectUrl={"/room"}>
+              <button className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
+                Sign-In
+              </button>
+            </SignInButton>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
+  
   // Join Room Handler
   const onJoin = async (roomcode) => {
     socket.emit("join-room", { roomCode: roomcode });
     navigate(`/meet/${roomCode}`);
   };
-
+  
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-tl from-[#090040] via-purple-600 to-[#471396] flex items-center justify-center p-4">
       <div className="text-white text-xl font-bold m-5">
