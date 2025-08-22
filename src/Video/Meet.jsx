@@ -2,11 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { Card, CardHeader,CardFooter, CardTitle, CardDescription} from "../ui/Card";
+import {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from "../ui/Card";
 import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 
-const socket = io("https://int-view-backend.onrender.com", { autoConnect: true });
+const socket = io("https://int-view-backend.onrender.com", {
+  autoConnect: true,
+});
 
 function Meet() {
   const { roomId } = useParams(); // get roomId from URL
@@ -15,33 +23,33 @@ function Meet() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnection = useRef(null);
-  const {isSignedIn} = useAuth();
-      if(!isSignedIn){
-          return <div className="w-[100%] h-[100vh] flex justify-center items-center">
-            <Card className="w-[50%]">
-                <CardHeader>
-                    <CardTitle>Oops! It seems you are not signed-in</CardTitle>
-                    <CardDescription>Please Sign-In to continue</CardDescription>
-                </CardHeader>
-                <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
-                    <SignInButton fallbackRedirectUrl={navigate("/meet/:id")}>
-                    <button 
-                      className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
-                      Sign-In
-                    </button>
-                    </SignInButton>
-                </CardFooter>
-            </Card>
-          </div>
-      }
-
-
+  const pendingCandidates = useRef([]);
+  const { isSignedIn } = useAuth();
+  if (!isSignedIn) {
+    return (
+      <div className="w-[100%] h-[100vh] flex justify-center items-center">
+        <Card className="w-[50%]">
+          <CardHeader>
+            <CardTitle>Oops! It seems you are not signed-in</CardTitle>
+            <CardDescription>Please Sign-In to continue</CardDescription>
+          </CardHeader>
+          <CardFooter className="flex w-full justify-center border-t-2 border-gray-500 p-5 pb-0">
+            <SignInButton fallbackRedirectUrl={navigate("/meet/:id")}>
+              <button className="rounded border bg-[#471396] w-50 h-10 text-white px-3 hover:bg-[#090040]">
+                Sign-In
+              </button>
+            </SignInButton>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   function handleOnMount(editor) {
     console.log(editor);
     editorRef.current = editor;
-    editor.focus();
-    return;
+    // safe async focus
+    requestAnimationFrame(() => editor.focus());
   }
 
   useEffect(() => {
@@ -118,11 +126,14 @@ function Meet() {
       new RTCSessionDescription(offer)
     );
 
-    // Create Answer for the Offer 
+    // Create Answer for the Offer
     const answer = await peerConnection.current.createAnswer();
-    
-    await peerConnection.current.setLocalDescription(answer);
 
+    await peerConnection.current.setLocalDescription(answer);
+    for (const c of pendingCandidates.current) {
+      await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
+    }
+    pendingCandidates.current = [];
     socket.emit("answer", { answer, roomId });
   };
 
@@ -131,21 +142,27 @@ function Meet() {
     await peerConnection.current.setRemoteDescription(
       new RTCSessionDescription(answer)
     );
+    for (const c of pendingCandidates.current) {
+      await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
+    }
+    pendingCandidates.current = [];
   };
 
   const handleCandidate = async (candidate) => {
     try {
-      await peerConnection.current.addIceCandidate(
-        new RTCIceCandidate(candidate)
-      );
+      if (peerConnection.current?.remoteDescription) {
+        await peerConnection.current.addIceCandidate(
+          new RTCIceCandidate(candidate)
+        );
+      } else {
+        pendingCandidates.current.push(candidate);
+      }
     } catch (err) {
       console.error("Error adding ICE candidate", err);
     }
   };
 
-  const handleChange = ()=>{
-    
-  }
+  const handleChange = () => {};
   return (
     <div className="h-screen w-screen flex bg-gray-900 text-white">
       {/* Left Sidebar */}
@@ -200,14 +217,13 @@ function Meet() {
         </div>
 
         <div className="flex-1 bg-gray-900 p-4">
-
           <div className="h-[75%] w-full bg-black/30 rounded-lg">
             {/* Monaco/CodeMirror Editor goes here */}
             <Editor
               height="100%"
               defaultLanguage="cpp"
               defaultValue="// Write your code here..."
-              theme="vs-dark" 
+              theme="vs-dark"
               onMount={handleOnMount}
               onChange={handleChange}
             />
